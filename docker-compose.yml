@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  login-api:
+    build: ./login-app-server
+    restart: unless-stopped
+    env_file: ./.env
+    ports:
+      - $NODE_LOCAL_PORT:$NODE_DOCKER_PORT
+    environment:
+      - CLIENT_ORIGIN=$CLIENT_ORIGIN
+    networks:
+      - backend
+      - frontend
+
+  login-ui:
+    depends_on:
+      - login-api
+    build:
+      context: ./login-app-front
+      args:
+        - REACT_APP_API_BASE_URL=$CLIENT_API_BASE_URL
+    ports:
+      - $REACT_LOCAL_PORT:$REACT_DOCKER_PORT
+    networks:
+      - frontend
+
+networks:
+  backend:
+  frontend:
